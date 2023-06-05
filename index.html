@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,20 +9,27 @@
 
     <link rel="stylesheet" href="main.css" />
 </head>
+
 <body>
-    
     <header>
         <h1>AbracadabraToDo</h1>
         <form id="new-toDo-form">
-            <input
-                type="text"
-                name="new-toDo-input"
-                id="new-toDo-input"
-                placeholder="ToDo Item Name"/>
-            <input
-                type="submit" 
-                id="new-toDo-submit"
-                value="Add ToDo Item" />
+            <div class="col">
+                <div class="dropdown-container">
+                    <div class="dropdown-toggle click-dropdown">
+                        Sort List
+                    </div>
+                    <div class="dropdown-menu">
+                        <ul>
+                            <li><a href="#">A-Z</a></li>
+                            <li><a href="#">Z-A</a></li>
+                            <li><a href="#">Initial Order</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <input type="text" name="new-toDo-input" id="new-toDo-input" placeholder="ToDo Item Name" />
+            <input type="submit" id="new-toDo-submit" class="buttonHoverGroup" value="Add ToDo Item" />
         </form>
     </header>
     <main>
@@ -50,4 +58,5 @@
 
     <script src="main.js"></script>
 </body>
+
 </html>
