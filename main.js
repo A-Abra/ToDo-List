@@ -23,10 +23,7 @@ window.addEventListener('load', () => {
         input.value = "";
     });
 
-
-
     document.querySelectorAll('.dropdown-toggle').forEach(dropDownFunc);
-
     // Dropdown Open and Close function
     function dropDownFunc(dropDown) {
         console.log(dropDown.classList.contains('click-dropdown'));
