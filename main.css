@@ -281,12 +281,12 @@ main {
 
 .toDo-item .actions {
     display: flex;
-    margin: 0 -0.5rem;
+    margin: 0 0.5rem;
 }
 
 .toDo-item .actions button {
     cursor: pointer;
-    margin: 0 0.5rem;
+    margin: 0 0.05rem;
     font-size: 1.125rem;
     font-weight: 700;
     text-transform: uppercase;

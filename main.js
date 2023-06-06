@@ -100,29 +100,42 @@ window.addEventListener('load', () => {
 
     // close the dropdown on mouse out from the dropdown list
     document.querySelectorAll('.dropdown-menu').forEach(function (dropDownList) {
-        // close the dropdown after user leave the list
+        // close the dropdown after user hovers off the dropdown
         dropDownList.onmouseleave = closeDropdown;
     });
 
 
-    sortButton.addEventListener('click', () => {
-        const todoItems = Array.from(elementList.querySelectorAll(".toDo-item .text"));
-        const sortedItems = [...todoItems].sort((a, b) => {
-            const textA = a.value.toLowerCase();
-            const textB = b.value.toLowerCase();
-            // Sort in ascending (A-Z) order
-            // For descending (Z-A) order, change the comparison to: return textB.localeCompare(textA);
-            return textA.localeCompare(textB);
-        });
+    document.querySelectorAll('.dropdown-menu a').forEach((a) => {
+        a.addEventListener('click', (e) => {
+            e.preventDefault();
+            const sortType = e.target.innerText;
 
-        // Clear the list
-        elementList.innerHTML = "";
-
-        // Add the sorted items back to the list
-        sortedItems.forEach((item) => {
-            createTodoItem(item.value);
+            // Sort the todo items based on the selected sort type
+            sortTodoItems(sortType);
         });
     });
+
+    function sortTodoItems(sortType) {
+        const todoItems = Array.from(elementList.querySelectorAll(".toDo-item .text"));
+
+        switch (sortType) {
+            case "A-Z":
+                todoItems.sort((a, b) => a.value.toLowerCase().localeCompare(b.value.toLowerCase()));
+                break;
+            case "Z-A":
+                todoItems.sort((a, b) => b.value.toLowerCase().localeCompare(a.value.toLowerCase()));
+                break;
+            case "Initial Order":
+                todoItems.sort((a, b) => a.dataset.index - b.dataset.index);
+                break;
+        }
+
+        elementList.innerHTML = "";
+
+        todoItems.forEach((item) => {
+            createTodoItem(item.value);
+        });
+    }
 
     function createTodoItem(itemText) {
         const item_el = document.createElement("div");
@@ -159,6 +172,8 @@ window.addEventListener('load', () => {
 
         elementList.appendChild(item_el);
 
+        
+        
         item_edit_el.addEventListener('click', () => {
             if (item_edit_el.innerText.toLowerCase() == "edit") {
                 item_input_el.removeAttribute("readonly");
