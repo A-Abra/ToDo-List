@@ -139,7 +139,7 @@ window.addEventListener('load', () => {
 
     function createTodoItem(itemText) {
         const item_el = document.createElement("div");
-        item_el.classList.add("toDo-item");
+        item_el.classList.add("toDo-item", "fade-in"); // Add "fade-in" class to trigger fade-in animation
 
         const item_content_el = document.createElement("div");
         item_content_el.classList.add("content");
@@ -172,14 +172,16 @@ window.addEventListener('load', () => {
 
         elementList.appendChild(item_el);
 
-        
-        
+
+
         item_edit_el.addEventListener('click', () => {
             if (item_edit_el.innerText.toLowerCase() == "edit") {
+                item_input_el.style.setProperty("color", "var(--lightBlue)"); // change color for better visibility
                 item_input_el.removeAttribute("readonly");
                 item_input_el.focus();
                 item_edit_el.innerText = "Save";
             } else {
+                item_input_el.style.setProperty("color", "var(--light)"); // revert back to default color
                 item_input_el.setAttribute("readonly", "readonly");
                 item_edit_el.innerText = "Edit";
             }
@@ -190,8 +192,25 @@ window.addEventListener('load', () => {
             localStorage.setItem("toDo-items", JSON.stringify(todoItems));
         });
 
+        item_input_el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Prevent form submission
+                item_edit_el.click(); // Trigger click event on "Edit" button
+            }
+            if (e.key === 'Delete') {
+                e.preventDefault(); // Prevent form submission
+                item_delete_el.click(); // Trigger click event on "Delete" button
+            }
+        });
+
         item_delete_el.addEventListener('click', () => {
-            elementList.removeChild(item_el);
+            // Add fade-out class to trigger fade-out animation
+            item_el.classList.add("fade-out");
+
+            // Remove the item from the DOM after the animation completes
+            item_el.addEventListener("animationend", () => {
+                elementList.removeChild(item_el);
+            });
 
             // Save the updated todo items to localStorage
             const todoItems = Array.from(elementList.querySelectorAll(".toDo-item .text"))
