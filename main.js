@@ -108,10 +108,17 @@ window.addEventListener('load', () => {
     document.querySelectorAll('.dropdown-menu a').forEach((a) => {
         a.addEventListener('click', (e) => {
             e.preventDefault();
-            const sortType = e.target.innerText;
+            const sortType = a.textContent;
 
             // Sort the todo items based on the selected sort type
             sortTodoItems(sortType);
+
+            // Update the dropdown menu with the selected sort type
+            sortDropdown.textContent = sortType;
+
+            if (sortType === "Custom") {
+                customSortAnimation();
+            }
         });
     });
 
@@ -125,8 +132,8 @@ window.addEventListener('load', () => {
             case "Z-A":
                 todoItems.sort((a, b) => b.value.toLowerCase().localeCompare(a.value.toLowerCase()));
                 break;
-            case "Initial Order":
-                todoItems.sort((a, b) => a.dataset.index - b.dataset.index);
+            case "Custom":
+                todoItems.sort((a, b) => null);
                 break;
         }
 
@@ -134,6 +141,32 @@ window.addEventListener('load', () => {
 
         todoItems.forEach((item) => {
             createTodoItem(item.value);
+        });
+    }
+
+    function customSortAnimation() {
+        const itemInputEls = Array.from(document.querySelectorAll(".toDo-item .text"));
+
+        // Set the initial position of the elements
+        for (const itemInputEl of itemInputEls) {
+            itemInputEl.style.transform = "translateX(0px)";
+        }
+
+        // Animate the elements to the final position
+        itemInputEls.forEach(itemInputEl => {
+            itemInputEl.animate(
+                [
+                    // keyframes
+                    { transform: "translateX(0px)" },
+                    { transform: "translateX(10px)" },
+                ],
+                {
+                    // timing options
+                    duration: 500,
+                    iterations: 1,
+                    fill: "forwards",
+                }
+            );
         });
     }
 
