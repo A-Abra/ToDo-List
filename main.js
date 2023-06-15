@@ -4,10 +4,9 @@ window.addEventListener('load', () => {
     const elementList = document.querySelector("#toDo-items")
 
     // Keeps todolist items made
-    const savedItems = JSON.parse(localStorage.getItem("toDo-items")) || [];
-    for (const itemText of savedItems) {
-        createTodoItem(itemText);
-    }
+    const customItemsList = [];
+    const AZ_List = [];
+    const ZA_List = [];
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -19,7 +18,15 @@ window.addEventListener('load', () => {
         }
 
         createTodoItem(item);
+        // Depending on sort chosen update the item list if its not any of the three do nothing
+        if (sortDropdown.textContent==="A-Z" || 
+        sortDropdown.textContent==="Z-A" || 
+        sortDropdown.textContent==="Custom"){ sortTodoItems(sortDropdown.textContent); } 
+        else { /* Do nothing */ }
 
+        // customItemsList.forEach(function (entry) {
+        //     console.log(entry);
+        // });
         input.value = "";
     });
 
@@ -110,14 +117,14 @@ window.addEventListener('load', () => {
             e.preventDefault();
             const sortType = a.textContent;
 
-            // Sort the todo items based on the selected sort type
-            sortTodoItems(sortType);
-
-            // Update the dropdown menu with the selected sort type
-            sortDropdown.textContent = sortType;
-
-            if (sortType === "Custom") {
-                customSortAnimation();
+            if (sortDropdown.textContent !== sortType) {
+                // Update the dropdown menu with the selected sort type
+                sortDropdown.textContent = sortType;
+                // Sort the todo items based on the selected sort type
+                sortTodoItems(sortType);
+                if (sortType === "Custom") {
+                    customSortAnimation();
+                }
             }
         });
     });
@@ -134,7 +141,6 @@ window.addEventListener('load', () => {
                 break;
             case "Custom":
                 todoItems.sort((a, b) => null);
-                customSortAnimation();
                 break;
         }
 
@@ -143,6 +149,24 @@ window.addEventListener('load', () => {
         todoItems.forEach((item) => {
             createTodoItem(item.value);
         });
+    }
+
+    function isAscendingOrder(arr) {
+        for (let i = 0; i < arr.length - 1; i++) {
+            if (arr[i].toLowerCase() > arr[i + 1].toLowerCase()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    function isDescendingOrder(arr) {
+        for (let i = 0; i < arr.length - 1; i++) {
+            if (arr[i].toLowerCase() < arr[i + 1].toLowerCase()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     function customSortAnimation() {
@@ -229,7 +253,8 @@ window.addEventListener('load', () => {
 
         elementList.appendChild(item_el);
 
-
+        // Push the item text to the customItemsList array
+        customItemsList.push(itemText);
 
         item_edit_el.addEventListener('click', () => {
             if (item_edit_el.innerText.toLowerCase() == "edit") {
