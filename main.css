@@ -292,6 +292,22 @@ main {
     animation: fadeOut 0.3s ease-out;
 }
 
+@keyframes customSortAnimation {
+    from {
+        transform: translateX(0px);
+    }
+
+    to {
+        transform: translateX(10px);
+    }
+}
+
+.custom-sort-animation {
+    animation-name: customSortAnimation;
+    animation-duration: 500ms;
+    animation-fill-mode: forwards;
+}
+
 .toDo-item .content {
     flex: 1 1 0%;
 }

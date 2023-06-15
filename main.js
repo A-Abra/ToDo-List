@@ -134,6 +134,7 @@ window.addEventListener('load', () => {
                 break;
             case "Custom":
                 todoItems.sort((a, b) => null);
+                customSortAnimation();
                 break;
         }
 
@@ -147,18 +148,16 @@ window.addEventListener('load', () => {
     function customSortAnimation() {
         const itemInputEls = Array.from(document.querySelectorAll(".toDo-item .text"));
 
-        // Set the initial position of the elements
-        for (const itemInputEl of itemInputEls) {
-            itemInputEl.style.transform = "translateX(0px)";
-        }
-
         // Animate the elements to the final position
-        itemInputEls.forEach(itemInputEl => {
+        itemInputEls.forEach((itemInputEl) => {
             itemInputEl.animate(
                 [
                     // keyframes
                     { transform: "translateX(0px)" },
-                    { transform: "translateX(10px)" },
+                    { transform: "translateX(15px)" },
+                    { transform: "translateX(21px)" },
+                    { transform: "translateX(26px)" },
+                    { transform: "translateX(30px)" },
                 ],
                 {
                     // timing options
@@ -166,7 +165,32 @@ window.addEventListener('load', () => {
                     iterations: 1,
                     fill: "forwards",
                 }
-            );
+            ).onfinish = () => {
+                const arrowUp = document.createElement("span");
+                arrowUp.innerHTML = "&#8593;";
+                arrowUp.style.marginRight = "5px";
+                arrowUp.style.color = "green";
+                arrowUp.style.position = "absolute";
+                arrowUp.style.left = "-30px"; // Set left position to 0
+
+                const arrowDown = document.createElement("span");
+                arrowDown.innerHTML = "&#8595;";
+                arrowDown.style.marginRight = "5px";
+                arrowDown.style.color = "red";
+                arrowDown.style.position = "absolute";
+                arrowDown.style.left = "-18px"; // Set left position to 15px
+
+                // Create a wrapper element to contain the arrow and the input element
+                const wrapper = document.createElement("div");
+                wrapper.style.position = "relative";
+                wrapper.style.marginLeft = "30px";
+                wrapper.appendChild(arrowUp);
+                wrapper.appendChild(arrowDown);
+                wrapper.appendChild(itemInputEl.cloneNode(true));
+
+                // Replace the original input element with the wrapper
+                itemInputEl.parentNode.replaceChild(wrapper, itemInputEl);
+            };
         });
     }
 
