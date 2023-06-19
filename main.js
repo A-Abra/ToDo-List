@@ -3,11 +3,10 @@ window.addEventListener('load', () => {
     const input = document.querySelector("#new-toDo-input")
     const elementList = document.querySelector("#toDo-items")
 
-    // Keeps todolist items made
-    const customItemsList = [];
-    const AZ_List = [];
-    const ZA_List = [];
+    // Keeps todolist items made for custom sort
+    let customItemsList = [];
 
+    //******* EL for Add ToDo Item *******
     form.addEventListener('submit', (e) => {
         e.preventDefault();
 
@@ -19,17 +18,24 @@ window.addEventListener('load', () => {
 
         createTodoItem(item);
         // Depending on sort chosen update the item list if its not any of the three do nothing
-        if (sortDropdown.textContent==="A-Z" || 
-        sortDropdown.textContent==="Z-A" || 
-        sortDropdown.textContent==="Custom"){ sortTodoItems(sortDropdown.textContent); } 
-        else { /* Do nothing */ }
+        if (sortDropdown.textContent === "A-Z" ||
+            sortDropdown.textContent === "Z-A" ||
+            sortDropdown.textContent === "Custom") {
+            // if Custom sort is active need to sort and play animation
+            if (sortDropdown.textContent === "Custom") {
+                sortTodoItems(sortDropdown.textContent);
+                customSortAnimation();
+            } else { sortTodoItems(sortDropdown.textContent); }
+        }
+        else { /* Do nothing where there is no sort active */ }
 
         // customItemsList.forEach(function (entry) {
         //     console.log(entry);
         // });
-        input.value = "";
+        input.value = ""; // Reset input for next ToDo Item
     });
 
+    //******* Dropdown Code Start *******
     document.querySelectorAll('.dropdown-toggle').forEach(dropDownFunc);
     // Dropdown Open and Close function
     function dropDownFunc(dropDown) {
@@ -81,15 +87,12 @@ window.addEventListener('load', () => {
 
     // Listen to the doc click
     window.addEventListener('click', function (e) {
-
         // Close the menu if click happen outside menu
         if (e.target.closest('.dropdown-container') === null) {
             // Close the opend dropdown
             closeDropdown();
         }
-
     });
-
 
     // Close the openend Dropdowns
     function closeDropdown() {
@@ -111,15 +114,14 @@ window.addEventListener('load', () => {
         dropDownList.onmouseleave = closeDropdown;
     });
 
-
     document.querySelectorAll('.dropdown-menu a').forEach((a) => {
         a.addEventListener('click', (e) => {
             e.preventDefault();
-            const sortType = a.textContent;
+            const sortType = a.innerText;
 
-            if (sortDropdown.textContent !== sortType) {
+            if (sortDropdown.innerText !== sortType) {
                 // Update the dropdown menu with the selected sort type
-                sortDropdown.textContent = sortType;
+                sortDropdown.innerText = sortType;
                 // Sort the todo items based on the selected sort type
                 sortTodoItems(sortType);
                 if (sortType === "Custom") {
@@ -128,96 +130,9 @@ window.addEventListener('load', () => {
             }
         });
     });
+    //******* Dropdown Code End *******
 
-    function sortTodoItems(sortType) {
-        const todoItems = Array.from(elementList.querySelectorAll(".toDo-item .text"));
-
-        switch (sortType) {
-            case "A-Z":
-                todoItems.sort((a, b) => a.value.toLowerCase().localeCompare(b.value.toLowerCase()));
-                break;
-            case "Z-A":
-                todoItems.sort((a, b) => b.value.toLowerCase().localeCompare(a.value.toLowerCase()));
-                break;
-            case "Custom":
-                todoItems.sort((a, b) => null);
-                break;
-        }
-
-        elementList.innerHTML = "";
-
-        todoItems.forEach((item) => {
-            createTodoItem(item.value);
-        });
-    }
-
-    function isAscendingOrder(arr) {
-        for (let i = 0; i < arr.length - 1; i++) {
-            if (arr[i].toLowerCase() > arr[i + 1].toLowerCase()) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    function isDescendingOrder(arr) {
-        for (let i = 0; i < arr.length - 1; i++) {
-            if (arr[i].toLowerCase() < arr[i + 1].toLowerCase()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    function customSortAnimation() {
-        const itemInputEls = Array.from(document.querySelectorAll(".toDo-item .text"));
-
-        // Animate the elements to the final position
-        itemInputEls.forEach((itemInputEl) => {
-            itemInputEl.animate(
-                [
-                    // keyframes
-                    { transform: "translateX(0px)" },
-                    { transform: "translateX(15px)" },
-                    { transform: "translateX(21px)" },
-                    { transform: "translateX(26px)" },
-                    { transform: "translateX(30px)" },
-                ],
-                {
-                    // timing options
-                    duration: 500,
-                    iterations: 1,
-                    fill: "forwards",
-                }
-            ).onfinish = () => {
-                const arrowUp = document.createElement("span");
-                arrowUp.innerHTML = "&#8593;";
-                arrowUp.style.marginRight = "5px";
-                arrowUp.style.color = "green";
-                arrowUp.style.position = "absolute";
-                arrowUp.style.left = "-30px"; // Set left position to 0
-
-                const arrowDown = document.createElement("span");
-                arrowDown.innerHTML = "&#8595;";
-                arrowDown.style.marginRight = "5px";
-                arrowDown.style.color = "red";
-                arrowDown.style.position = "absolute";
-                arrowDown.style.left = "-18px"; // Set left position to 15px
-
-                // Create a wrapper element to contain the arrow and the input element
-                const wrapper = document.createElement("div");
-                wrapper.style.position = "relative";
-                wrapper.style.marginLeft = "30px";
-                wrapper.appendChild(arrowUp);
-                wrapper.appendChild(arrowDown);
-                wrapper.appendChild(itemInputEl.cloneNode(true));
-
-                // Replace the original input element with the wrapper
-                itemInputEl.parentNode.replaceChild(wrapper, itemInputEl);
-            };
-        });
-    }
-
+    //******* Creates ToDo Item DOM *******    
     function createTodoItem(itemText) {
         const item_el = document.createElement("div");
         item_el.classList.add("toDo-item", "fade-in"); // Add "fade-in" class to trigger fade-in animation
@@ -235,6 +150,7 @@ window.addEventListener('load', () => {
 
         item_content_el.appendChild(item_input_el);
 
+        //creation of edit and delete buttons
         const item_actions_el = document.createElement("div");
         item_actions_el.classList.add("actions");
 
@@ -275,13 +191,13 @@ window.addEventListener('load', () => {
         });
 
         item_input_el.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter') { // Press Enter key to edit item
                 e.preventDefault(); // Prevent form submission
-                item_edit_el.click(); // Trigger click event on "Edit" button
+                item_edit_el.click(); // Trigger click event
             }
-            if (e.key === 'Delete') {
-                e.preventDefault(); // Prevent form submission
-                item_delete_el.click(); // Trigger click event on "Delete" button
+            if (e.key === 'Delete') { // Press Delete key to delete item
+                e.preventDefault();
+                item_delete_el.click();
             }
         });
 
@@ -300,4 +216,81 @@ window.addEventListener('load', () => {
             localStorage.setItem("toDo-items", JSON.stringify(todoItems));
         });
     }
+
+    function sortTodoItems(sortType) {
+        const todoItems = Array.from(elementList.querySelectorAll(".toDo-item .text"));
+
+        switch (sortType) {
+            case "A-Z":
+                todoItems.sort((a, b) => a.value.toLowerCase().localeCompare(b.value.toLowerCase()));
+                break;
+            case "Z-A":
+                todoItems.sort((a, b) => b.value.toLowerCase().localeCompare(a.value.toLowerCase()));
+                break;
+            case "Custom":
+                todoItems.sort((a, b) => {
+                    const aValue = a.value.toLowerCase();
+                    const bValue = b.value.toLowerCase();
+                    const aIndex = customItemsList.indexOf(aValue);
+                    const bIndex = customItemsList.indexOf(bValue);
+                    return aIndex - bIndex;
+                });
+                break;
+        }
+        elementList.innerHTML = "";
+
+        todoItems.forEach((item) => {
+            createTodoItem(item.value);
+        });
+    }
+
+    function customSortAnimation() {
+        const itemInputEls = Array.from(document.querySelectorAll(".toDo-item .text"));
+
+        // Animate the elements to the final position
+        itemInputEls.forEach((itemInputEl) => {
+            itemInputEl.animate(
+                [
+                    // keyframes
+                    { transform: "translateX(0px)" },
+                    { transform: "translateX(15px)" },
+                    { transform: "translateX(21px)" },
+                    { transform: "translateX(26px)" },
+                    { transform: "translateX(30px)" },
+                ],
+                {
+                    // timing options
+                    duration: 500,
+                    iterations: 1,
+                    fill: "forwards",
+                }
+            ).onfinish = () => {
+                const arrowUp = document.createElement("span");
+                arrowUp.innerHTML = "&#8593;";
+                arrowUp.style.marginRight = "5px";
+                arrowUp.style.color = "green";
+                arrowUp.style.position = "absolute";
+                arrowUp.style.left = "-30px"; // Set left position to 0
+
+                const arrowDown = document.createElement("span");
+                arrowDown.innerHTML = "&#8595;";
+                arrowDown.style.marginRight = "5px";
+                arrowDown.style.color = "red";
+                arrowDown.style.position = "absolute";
+                arrowDown.style.left = "-18px"; // Set left position to 15px
+
+                // Create a wrapper element to contain the arrow and the input element
+                const arrowWrapper = document.createElement("div");
+                arrowWrapper.style.position = "relative";
+                arrowWrapper.style.marginLeft = "30px";
+                arrowWrapper.appendChild(arrowUp);
+                arrowWrapper.appendChild(arrowDown);
+                arrowWrapper.appendChild(itemInputEl.cloneNode(true));
+
+                // Replace the original input element with the wrapper
+                itemInputEl.parentNode.replaceChild(arrowWrapper, itemInputEl);
+            };
+        });
+    }
+
 });
