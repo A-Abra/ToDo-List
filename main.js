@@ -142,13 +142,39 @@ window.addEventListener('load', () => {
 
         item_el.appendChild(item_content_el);
 
+        const arrowUp = document.createElement("span");
+        arrowUp.innerHTML = "&#8593;";
+        arrowUp.classList.add("arrow", "up-arrow");
+
+        // arrowUp.style.marginRight = "5px";
+        // arrowUp.style.color = "green";
+        // arrowUp.style.position = "absolute";
+        // arrowUp.style.left = "-30px"; // Set left position to 0
+
+        const arrowDown = document.createElement("span");
+        arrowDown.innerHTML = "&#8595;";
+        arrowDown.classList.add("arrow", "down-arrow");
+
+        // arrowDown.style.marginRight = "5px";
+        // arrowDown.style.color = "red";
+        // arrowDown.style.position = "absolute";
+        // arrowDown.style.left = "-18px"; // Set left position to 15px
+
+        // Create a wrapper element to contain the arrow and the input element
+        const arrowWrapper = document.createElement("div");
+        arrowWrapper.classList.add("arrow-wrapper");
+        arrowWrapper.appendChild(arrowUp);
+        arrowWrapper.appendChild(arrowDown);
+
         const item_input_el = document.createElement("input");
         item_input_el.classList.add("text");
         item_input_el.type = "text";
         item_input_el.value = itemText;
         item_input_el.setAttribute("readonly", "readonly");
 
+        item_content_el.appendChild(arrowWrapper);
         item_content_el.appendChild(item_input_el);
+
 
         //creation of edit and delete buttons
         const item_actions_el = document.createElement("div");
@@ -157,6 +183,7 @@ window.addEventListener('load', () => {
         const item_edit_el = document.createElement("button");
         item_edit_el.classList.add("edit");
         item_edit_el.innerHTML = "Edit";
+        // item_edit_el.classList.add("invisible-edit");
 
         const item_delete_el = document.createElement("button");
         item_delete_el.classList.add("delete");
@@ -202,6 +229,14 @@ window.addEventListener('load', () => {
         });
 
         item_delete_el.addEventListener('click', () => {
+            // Delete item from custom array will append it to the end if readded again
+            const index = customItemsList.indexOf(item_input_el.value); // Get the index of the item in the customItemsList array
+            if (index > -1) {
+                customItemsList.splice(index, 1); // Remove the item from the customItemsList array
+                // Shift the elements to the left
+                for (let i = index; i < customItemsList.length; i++) { customItemsList[i] = customItemsList[i - 1]; }
+            }
+
             // Add fade-out class to trigger fade-out animation
             item_el.classList.add("fade-out");
 
@@ -249,6 +284,9 @@ window.addEventListener('load', () => {
 
         // Animate the elements to the final position
         itemInputEls.forEach((itemInputEl) => {
+            const arrowUp = itemInputEl.parentNode.querySelector(".up-arrow");
+            const arrowDown = itemInputEl.parentNode.querySelector(".down-arrow");
+
             itemInputEl.animate(
                 [
                     // keyframes
@@ -265,31 +303,9 @@ window.addEventListener('load', () => {
                     fill: "forwards",
                 }
             ).onfinish = () => {
-                const arrowUp = document.createElement("span");
-                arrowUp.innerHTML = "&#8593;";
-                arrowUp.style.marginRight = "5px";
-                arrowUp.style.color = "green";
-                arrowUp.style.position = "absolute";
-                arrowUp.style.left = "-30px"; // Set left position to 0
-
-                const arrowDown = document.createElement("span");
-                arrowDown.innerHTML = "&#8595;";
-                arrowDown.style.marginRight = "5px";
-                arrowDown.style.color = "red";
-                arrowDown.style.position = "absolute";
-                arrowDown.style.left = "-18px"; // Set left position to 15px
-
-                // Create a wrapper element to contain the arrow and the input element
-                const arrowWrapper = document.createElement("div");
-                arrowWrapper.style.position = "relative";
-                arrowWrapper.style.marginLeft = "30px";
-                arrowWrapper.appendChild(arrowUp);
-                arrowWrapper.appendChild(arrowDown);
-                arrowWrapper.appendChild(itemInputEl.cloneNode(true));
-
-                // Replace the original input element with the wrapper
-                itemInputEl.parentNode.replaceChild(arrowWrapper, itemInputEl);
-            };
+                arrowUp.style.visibility = "visible";
+                arrowDown.style.visibility = "visible";
+            }
         });
     }
 
