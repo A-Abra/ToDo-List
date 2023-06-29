@@ -17,6 +17,10 @@ window.addEventListener('load', () => {
         }
 
         createTodoItem(item);
+        // Push the item text to the customItemsList array
+        customItemsList.push(item);
+        console.log(customItemsList);
+
         // Depending on sort chosen update the item list if its not any of the three do nothing
         if (sortDropdown.textContent === "A-Z" ||
             sortDropdown.textContent === "Z-A" ||
@@ -142,23 +146,29 @@ window.addEventListener('load', () => {
 
         item_el.appendChild(item_content_el);
 
-        const arrowUp = document.createElement("span");
+        const arrowUp = document.createElement("button");
         arrowUp.innerHTML = "&#8593;";
         arrowUp.classList.add("arrow", "up-arrow");
+        arrowUp.addEventListener('click', () => {
+            const currentItem = item_el;
+            const previousItem = currentItem.previousElementSibling;
+            if (previousItem) {
+                elementList.insertBefore(currentItem, previousItem);
+                swapCustomItemsList(itemText, previousItem);
+            }
+        });
 
-        // arrowUp.style.marginRight = "5px";
-        // arrowUp.style.color = "green";
-        // arrowUp.style.position = "absolute";
-        // arrowUp.style.left = "-30px"; // Set left position to 0
-
-        const arrowDown = document.createElement("span");
+        const arrowDown = document.createElement("button");
         arrowDown.innerHTML = "&#8595;";
         arrowDown.classList.add("arrow", "down-arrow");
-
-        // arrowDown.style.marginRight = "5px";
-        // arrowDown.style.color = "red";
-        // arrowDown.style.position = "absolute";
-        // arrowDown.style.left = "-18px"; // Set left position to 15px
+        arrowDown.addEventListener('click', () => {
+            const currentItem = item_el;
+            const nextItem = currentItem.nextElementSibling;
+            if (nextItem) {
+                elementList.insertBefore(nextItem, currentItem);
+                swapCustomItemsList(itemText, nextItem);
+            }
+        });
 
         // Create a wrapper element to contain the arrow and the input element
         const arrowWrapper = document.createElement("div");
@@ -183,7 +193,6 @@ window.addEventListener('load', () => {
         const item_edit_el = document.createElement("button");
         item_edit_el.classList.add("edit");
         item_edit_el.innerHTML = "Edit";
-        // item_edit_el.classList.add("invisible-edit");
 
         const item_delete_el = document.createElement("button");
         item_delete_el.classList.add("delete");
@@ -196,10 +205,9 @@ window.addEventListener('load', () => {
 
         elementList.appendChild(item_el);
 
-        // Push the item text to the customItemsList array
-        customItemsList.push(itemText);
-
         item_edit_el.addEventListener('click', () => {
+            // like arrays temp variable is a reference to the item_input_el element, and the element itself is changing like arrays
+            let temp = Object.assign({}, item_input_el); // Object.assign like array.clone
             if (item_edit_el.innerText.toLowerCase() == "edit") {
                 item_input_el.style.setProperty("color", "var(--lightBlue)"); // change color for better visibility
                 item_input_el.removeAttribute("readonly");
@@ -208,6 +216,9 @@ window.addEventListener('load', () => {
             } else {
                 item_input_el.style.setProperty("color", "var(--light)"); // revert back to default color
                 item_input_el.setAttribute("readonly", "readonly");
+                if (item_input_el.value !== temp) {
+                    sortTodoItems(sortDropdown.textContent);
+                }
                 item_edit_el.innerText = "Edit";
             }
 
@@ -229,13 +240,14 @@ window.addEventListener('load', () => {
         });
 
         item_delete_el.addEventListener('click', () => {
-            // Delete item from custom array will append it to the end if readded again
-            const index = customItemsList.indexOf(item_input_el.value); // Get the index of the item in the customItemsList array
+            // Delete item from custom array without changing the order
+            const index = customItemsList.findLastIndex((value, i) => {
+                return value === item_input_el.value;
+            });
             if (index > -1) {
                 customItemsList.splice(index, 1); // Remove the item from the customItemsList array
-                // Shift the elements to the left
-                for (let i = index; i < customItemsList.length; i++) { customItemsList[i] = customItemsList[i - 1]; }
             }
+            console.log(customItemsList);
 
             // Add fade-out class to trigger fade-out animation
             item_el.classList.add("fade-out");
@@ -252,6 +264,20 @@ window.addEventListener('load', () => {
         });
     }
 
+    function swapCustomItemsList(itemText, newItemEl) {
+        // Get the index of the item that was clicked
+        const currentItemIndex = customItemsList.indexOf(itemText);
+
+        // Get the index of the item that was swapped with
+        const newItemIndex = Array.from(elementList.children).indexOf(newItemEl);
+
+        // Swap the positions of the two items in the array
+        const temp = customItemsList[newItemIndex];
+        customItemsList[newItemIndex] = customItemsList[currentItemIndex];
+        customItemsList[currentItemIndex] = temp;
+        console.log(customItemsList);
+    }
+
     function sortTodoItems(sortType) {
         const todoItems = Array.from(elementList.querySelectorAll(".toDo-item .text"));
 
@@ -264,11 +290,7 @@ window.addEventListener('load', () => {
                 break;
             case "Custom":
                 todoItems.sort((a, b) => {
-                    const aValue = a.value.toLowerCase();
-                    const bValue = b.value.toLowerCase();
-                    const aIndex = customItemsList.indexOf(aValue);
-                    const bIndex = customItemsList.indexOf(bValue);
-                    return aIndex - bIndex;
+                    return customItemsList.indexOf(a.value) - customItemsList.indexOf(b.value);
                 });
                 break;
         }

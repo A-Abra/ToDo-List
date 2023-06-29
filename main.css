@@ -365,24 +365,26 @@ main {
 
 .arrow {
     margin-right: 5px;
+    /* cursor: pointer; */
 }
 
 .up-arrow {
     position: absolute;
+    cursor: pointer;
     visibility: hidden;
-    margin-right: 5px;
     color: green;
-    left: -30px;
+    left: -32px;
+    padding-right: 1px;
+    /* background-color: yellow; */
 }
 
 .down-arrow {
     position: absolute;
+    cursor: pointer;
     visibility: hidden;
-    margin-right: 5px;
     color: red;
-    left: -18px;
-}
-
-.invisible-edit {
-    visibility: visible;
+    left: -17px;
+    padding-left: 1px;
+    margin-left: 3px;
+    /* background-color: blue; */
 }
