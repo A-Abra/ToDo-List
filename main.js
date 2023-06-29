@@ -265,17 +265,26 @@ window.addEventListener('load', () => {
     }
 
     function swapCustomItemsList(itemText, newItemEl) {
-        // Get the index of the item that was clicked
-        const currentItemIndex = customItemsList.indexOf(itemText);
+        const currentItem = Array.from(elementList.children).find((item) => {
+            const textEl = item.querySelector(".toDo-item .text");
+            return textEl.value === itemText;
+        });
 
-        // Get the index of the item that was swapped with
-        const newItemIndex = Array.from(elementList.children).indexOf(newItemEl);
+        const newItem = newItemEl.closest(".toDo-item");
 
-        // Swap the positions of the two items in the array
-        const temp = customItemsList[newItemIndex];
-        customItemsList[newItemIndex] = customItemsList[currentItemIndex];
-        customItemsList[currentItemIndex] = temp;
+        // Swap the positions of the two items in the DOM
+        elementList.insertBefore(newItem, currentItem);
+
+        // Update the customItemsList array to reflect the new order
+        const currentIndex = customItemsList.indexOf(itemText);
+        const newIndex = customItemsList.indexOf(newItem.querySelector(".text").value);
+
+        customItemsList.splice(currentIndex, 1); // Remove the current item from the array
+        customItemsList.splice(newIndex, 0, itemText); // Insert the current item at the new index
         console.log(customItemsList);
+
+        sortTodoItems(sortDropdown.textContent);
+        customSortAnimation();
     }
 
     function sortTodoItems(sortType) {
