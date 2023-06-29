@@ -15,6 +15,11 @@ window.addEventListener('load', () => {
             alert("Please fill out a TODO item");
             return;
         }
+        // Check for duplicate items
+        if (customItemsList.includes(item)) {
+            alert("This TODO item already exists");
+            return;
+        }
 
         createTodoItem(item);
         // Push the item text to the customItemsList array
@@ -25,17 +30,10 @@ window.addEventListener('load', () => {
         if (sortDropdown.textContent === "A-Z" ||
             sortDropdown.textContent === "Z-A" ||
             sortDropdown.textContent === "Custom") {
-            // if Custom sort is active need to sort and play animation
-            if (sortDropdown.textContent === "Custom") {
-                sortTodoItems(sortDropdown.textContent);
-                customSortAnimation();
-            } else { sortTodoItems(sortDropdown.textContent); }
+            sortTodoItems(sortDropdown.textContent);
         }
         else { /* Do nothing where there is no sort active */ }
 
-        // customItemsList.forEach(function (entry) {
-        //     console.log(entry);
-        // });
         input.value = ""; // Reset input for next ToDo Item
     });
 
@@ -100,7 +98,7 @@ window.addEventListener('load', () => {
 
     // Close the openend Dropdowns
     function closeDropdown() {
-        console.log('run');
+        console.log('closeDropdown');
 
         // remove the open and active class from other opened Dropdown (Closing the opend DropDown)
         document.querySelectorAll('.dropdown-container').forEach(function (container) {
@@ -128,9 +126,6 @@ window.addEventListener('load', () => {
                 sortDropdown.innerText = sortType;
                 // Sort the todo items based on the selected sort type
                 sortTodoItems(sortType);
-                if (sortType === "Custom") {
-                    customSortAnimation();
-                }
             }
         });
     });
@@ -217,10 +212,12 @@ window.addEventListener('load', () => {
                 item_input_el.style.setProperty("color", "var(--light)"); // revert back to default color
                 item_input_el.setAttribute("readonly", "readonly");
                 if (item_input_el.value !== temp) {
-                    if (sortDropdown.textContent === "Custom") {
-                        sortTodoItems(sortDropdown.textContent);
-                        customSortAnimation();
-                    } else { sortTodoItems(sortDropdown.textContent); }
+                    const index = customItemsList.findIndex((value) => value === itemText);
+                    if (index > -1) {
+                        customItemsList[index] = item_input_el.value; // Update the value in the customItemsList array
+                    }
+                    console.log(customItemsList);
+                    sortTodoItems(sortDropdown.textContent);
                 }
                 item_edit_el.innerText = "Edit";
             }
@@ -287,7 +284,6 @@ window.addEventListener('load', () => {
         console.log(customItemsList);
 
         sortTodoItems(sortDropdown.textContent);
-        customSortAnimation();
     }
 
     function sortTodoItems(sortType) {
@@ -310,6 +306,9 @@ window.addEventListener('load', () => {
 
         todoItems.forEach((item) => {
             createTodoItem(item.value);
+            if (sortType === "Custom") {
+                customSortAnimation();
+            }
         });
     }
 
