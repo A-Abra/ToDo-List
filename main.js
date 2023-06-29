@@ -217,7 +217,10 @@ window.addEventListener('load', () => {
                 item_input_el.style.setProperty("color", "var(--light)"); // revert back to default color
                 item_input_el.setAttribute("readonly", "readonly");
                 if (item_input_el.value !== temp) {
-                    sortTodoItems(sortDropdown.textContent);
+                    if (sortDropdown.textContent === "Custom") {
+                        sortTodoItems(sortDropdown.textContent);
+                        customSortAnimation();
+                    } else { sortTodoItems(sortDropdown.textContent); }
                 }
                 item_edit_el.innerText = "Edit";
             }
