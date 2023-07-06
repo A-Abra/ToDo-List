@@ -200,6 +200,14 @@ window.addEventListener('load', () => {
 
         elementList.appendChild(item_el);
 
+        // // Remove the fade-in class from existing items
+        // const existingItems = elementList.querySelectorAll(".toDo-item");
+        // existingItems.forEach((existingItem) => {
+        //     existingItem.classList.remove("fade-in");
+        // });
+        // // Add the fade-in class to the new item
+        // item_el.classList.add("fade-in");
+
         item_edit_el.addEventListener('click', () => {
             // like arrays temp variable is a reference to the item_input_el element, and the element itself is changing like arrays
             let temp = Object.assign({}, item_input_el); // Object.assign like array.clone
@@ -213,9 +221,8 @@ window.addEventListener('load', () => {
                 item_input_el.setAttribute("readonly", "readonly");
                 if (item_input_el.value !== temp) {
                     const index = customItemsList.findIndex((value) => value === itemText);
-                    if (index > -1) {
-                        customItemsList[index] = item_input_el.value; // Update the value in the customItemsList array
-                    }
+                    // Update the value in the customItemsList array
+                    if (index > -1) { customItemsList[index] = item_input_el.value; }
                     console.log(customItemsList);
                     sortTodoItems(sortDropdown.textContent);
                 }
@@ -244,9 +251,7 @@ window.addEventListener('load', () => {
             const index = customItemsList.findLastIndex((value, i) => {
                 return value === item_input_el.value;
             });
-            if (index > -1) {
-                customItemsList.splice(index, 1); // Remove the item from the customItemsList array
-            }
+            if (index > -1) { customItemsList.splice(index, 1); }
             console.log(customItemsList);
 
             // Add fade-out class to trigger fade-out animation
@@ -272,18 +277,38 @@ window.addEventListener('load', () => {
 
         const newItem = newItemEl.closest(".toDo-item");
 
-        // Swap the positions of the two items in the DOM
-        elementList.insertBefore(newItem, currentItem);
+        // Get the index of the current item and the new item
+        const currentIndex = Array.from(elementList.children).indexOf(currentItem);
+        const newIndex = Array.from(elementList.children).indexOf(newItem);
+
+        // Swap the positions of the two items in the DOM using CSS animations
+        // currentItem.style.transform = `translateY(${newIndex - currentIndex}00%)`;
+        // newItem.style.transform = `translateY(${currentIndex - newIndex}00%)`;
 
         // Update the customItemsList array to reflect the new order
-        const currentIndex = customItemsList.indexOf(itemText);
-        const newIndex = customItemsList.indexOf(newItem.querySelector(".text").value);
-
-        customItemsList.splice(currentIndex, 1); // Remove the current item from the array
-        customItemsList.splice(newIndex, 0, itemText); // Insert the current item at the new index
+        const temp = customItemsList[currentIndex];
+        customItemsList[currentIndex] = customItemsList[newIndex];
+        customItemsList[newIndex] = temp;
         console.log(customItemsList);
 
-        sortTodoItems(sortDropdown.textContent);
+        // Disable pointer events during the animation to prevent user interactions
+        elementList.style.pointerEvents = "none";
+
+        // Add the fade-out class to the two list items
+        currentItem.classList.add("fade-out");
+        newItem.classList.add("fade-out");
+
+        // Listen for the end of the animation
+        currentItem.addEventListener("animationend", () => {
+            // Remove the fade-out class from the two list items
+            currentItem.classList.remove("fade-out");
+            newItem.classList.remove("fade-out");
+
+            // Reset the transforms and enable pointer events
+            currentItem.style.transform = "";
+            newItem.style.transform = "";
+            elementList.style.pointerEvents = "auto";
+        });
     }
 
     function sortTodoItems(sortType) {
@@ -306,9 +331,7 @@ window.addEventListener('load', () => {
 
         todoItems.forEach((item) => {
             createTodoItem(item.value);
-            if (sortType === "Custom") {
-                customSortAnimation();
-            }
+            if (sortType === "Custom") { customSortAnimation(); }
         });
     }
 
@@ -320,9 +343,9 @@ window.addEventListener('load', () => {
             const arrowUp = itemInputEl.parentNode.querySelector(".up-arrow");
             const arrowDown = itemInputEl.parentNode.querySelector(".down-arrow");
 
+            // Apply translationX animation
             itemInputEl.animate(
                 [
-                    // keyframes
                     { transform: "translateX(0px)" },
                     { transform: "translateX(15px)" },
                     { transform: "translateX(21px)" },
@@ -330,15 +353,21 @@ window.addEventListener('load', () => {
                     { transform: "translateX(30px)" },
                 ],
                 {
-                    // timing options
                     duration: 500,
-                    iterations: 1,
                     fill: "forwards",
                 }
-            ).onfinish = () => {
-                arrowUp.style.visibility = "visible";
-                arrowDown.style.visibility = "visible";
-            }
+            );
+
+            // Apply fade-in animation with delay
+            arrowUp.style.opacity = 0;
+            arrowDown.style.opacity = 0;
+            arrowUp.style.transition = "opacity 0.3s ease-in 0.3s";
+            arrowDown.style.transition = "opacity 0.3s ease-in 0.3s";
+
+            setTimeout(() => {
+                arrowUp.style.opacity = 1;
+                arrowDown.style.opacity = 1;
+            }, 100); // Delay in milliseconds
         });
     }
 

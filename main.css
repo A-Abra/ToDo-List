@@ -371,7 +371,7 @@ main {
 .up-arrow {
     position: absolute;
     cursor: pointer;
-    visibility: hidden;
+    opacity: 0;
     color: green;
     left: -32px;
     padding-right: 1px;
@@ -381,7 +381,7 @@ main {
 .down-arrow {
     position: absolute;
     cursor: pointer;
-    visibility: hidden;
+    opacity: 0;
     color: red;
     left: -17px;
     padding-left: 1px;
