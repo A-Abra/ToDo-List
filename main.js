@@ -274,16 +274,19 @@ window.addEventListener('load', () => {
             const textEl = item.querySelector(".toDo-item .text");
             return textEl.value === itemText;
         });
-
         const newItem = newItemEl.closest(".toDo-item");
 
         // Get the index of the current item and the new item
         const currentIndex = Array.from(elementList.children).indexOf(currentItem);
         const newIndex = Array.from(elementList.children).indexOf(newItem);
 
+        // Add the fade-out class to the two list items
+        currentItem.classList.add("fade-out");
+        newItem.classList.add("fade-out");
+
         // Swap the positions of the two items in the DOM using CSS animations
-        // currentItem.style.transform = `translateY(${newIndex - currentIndex}00%)`;
-        // newItem.style.transform = `translateY(${currentIndex - newIndex}00%)`;
+        currentItem.style.transform = `translateY(${newIndex - currentIndex}00%)`;
+        newItem.style.transform = `translateY(${currentIndex - newIndex}00%)`;
 
         // Update the customItemsList array to reflect the new order
         const temp = customItemsList[currentIndex];
@@ -293,10 +296,6 @@ window.addEventListener('load', () => {
 
         // Disable pointer events during the animation to prevent user interactions
         elementList.style.pointerEvents = "none";
-
-        // Add the fade-out class to the two list items
-        currentItem.classList.add("fade-out");
-        newItem.classList.add("fade-out");
 
         // Listen for the end of the animation
         currentItem.addEventListener("animationend", () => {
@@ -322,9 +321,7 @@ window.addEventListener('load', () => {
                 todoItems.sort((a, b) => b.value.toLowerCase().localeCompare(a.value.toLowerCase()));
                 break;
             case "Custom":
-                todoItems.sort((a, b) => {
-                    return customItemsList.indexOf(a.value) - customItemsList.indexOf(b.value);
-                });
+                todoItems.sort((a, b) => { return customItemsList.indexOf(a.value) - customItemsList.indexOf(b.value); });
                 break;
         }
         elementList.innerHTML = "";
