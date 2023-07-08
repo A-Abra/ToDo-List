@@ -64,7 +64,6 @@ window.addEventListener('load', () => {
         }
 
         if (dropDown.classList.contains('hover-dropdown') === true) {
-
             dropDown.onmouseover = dropDown.onmouseout = dropdownHover;
 
             function dropdownHover(e) {
@@ -165,6 +164,9 @@ window.addEventListener('load', () => {
             }
         });
 
+        arrowUp.style.pointerEvents = "none";
+        arrowDown.style.pointerEvents = "none";
+
         // Create a wrapper element to contain the arrow and the input element
         const arrowWrapper = document.createElement("div");
         arrowWrapper.classList.add("arrow-wrapper");
@@ -181,7 +183,7 @@ window.addEventListener('load', () => {
         item_content_el.appendChild(item_input_el);
 
 
-        //creation of edit and delete buttons
+        // Creation of edit and delete buttons
         const item_actions_el = document.createElement("div");
         item_actions_el.classList.add("actions");
 
@@ -297,7 +299,7 @@ window.addEventListener('load', () => {
         // Disable pointer events during the animation to prevent user interactions
         elementList.style.pointerEvents = "none";
 
-        // Listen for the end of the animation
+        // Listen for the end of the animation in order for consistent animation
         currentItem.addEventListener("animationend", () => {
             // Remove the fade-out class from the two list items
             currentItem.classList.remove("fade-out");
@@ -360,6 +362,9 @@ window.addEventListener('load', () => {
             arrowDown.style.opacity = 0;
             arrowUp.style.transition = "opacity 0.3s ease-in 0.3s";
             arrowDown.style.transition = "opacity 0.3s ease-in 0.3s";
+
+            arrowUp.style.pointerEvents = "auto";
+            arrowDown.style.pointerEvents = "auto";
 
             setTimeout(() => {
                 arrowUp.style.opacity = 1;
